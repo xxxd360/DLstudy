@@ -1,0 +1,56 @@
+训练模型流程：
+第一步：配置超参数
+第二步：加载并预处理数据
+第三步：定义模型
+第四步：定义损失函数和优化器
+第五步：手写训练循环
+第六步：手写测试循环
+第七步：启动训练和测试 做出可视化
+第八步：保存/加载模型  做成可用的API接口
+
+torch（张量、模型、优化器）
+torchvision（图像、数据集、增强、预训练模型）
+numpy（计算）
+matplotlib（画图）
+
+torch.Tensor → 张量操作	张量变形 / 运算 / 索引	想展平图片、求均值
+torch.nn → 神经网络层	搭建模型（卷积 / 全连接）	想定义 CNN、LSTM
+torch.optim → 优化器	参数更新	想选 Adam/SGD 优化器
+torch.utils.data → 数据加载	批处理 / 数据集管理	想加载自定义数据集
+torch.autograd → 自动求导	梯度计算	想手动控制反向传播
+
+torchvision.datasets	内置经典视觉数据集（MNIST/CIFAR/ImageNet 等）
+torchvision.transforms	图像预处理（缩放 / 裁剪 / 归一化 / 张量转换等）
+torchvision.models	预训练模型（ResNet/VGG/YOLO/ViT 等）
+torchvision.utils	辅助工具（拼接图像、保存可视化结果等）
+torchvision.io	图像 / 视频读写	60%	高效读取图像 / 视频（替代 PIL/OpenCV）
+torchvision.ops	视觉算法核心算子	50%	卷积、NMS（非极大值抑制）、ROI 池化等底层算子
+torchvision.models.segmentation	分割模型	40%	语义分割 / 实例分割模型（FCN/DeepLabV3）
+torchvision.models.detection	检测模型	40%	目标检测模型（Faster R-CNN/SSD/RetinaNet）
+torchvision.transforms.v2	新一代预处理	30%	支持张量 / PIL/NumPy 多输入的增强（2.0 + 版本）
+
+
+
+核心场景	该用的函数 / 类	一句话说明
+定义模型	nn.Module + forward()	所有模型都要继承这个类
+全连接层	nn.Linear(in_features, out_features)	输入输出维度必设
+卷积层	nn.Conv2d(in_channels, out_channels, kernel_size)	通道数 + 核大小必设
+激活函数	nn.ReLU()/nn.Sigmoid()	直接用默认参数即可
+损失函数（分类）	nn.CrossEntropyLoss()	内置 softmax，不用手动加
+损失函数（回归）	nn.MSELoss()	均方误差，适合回归任务
+优化器	torch.optim.Adam(model.parameters(), lr=1e-3)	最常用的优化器
+数据加载	DataLoader(dataset, batch_size, shuffle)	批处理 + 打乱核心函数
+张量展平	x.view(x.size(0), -1)	保留批次维度，自动算其他维度
+移到 GPU/CPU	model.to(device) + data.to(device)	模型和数据要同步移
+清空梯度	optimizer.zero_grad()	训练循环第一步必做
+反向传播	loss.backward()	计算参数梯度
+更新参数	optimizer.step()	用梯度更新参数
+测试时关闭梯度	with torch.no_grad():	测试循环必用，节省内存
+
+
+GPT 类 decoder-only 架构（必学）
+BERT + 预训练 + 微调（必学）
+LLM 全流程：训练、微调、推理、RAG
+Diffusion 扩散模型（图像生成）
+Mamba / SSM（新一代序列模型）
+多模态模型（CLIP + 图文）
