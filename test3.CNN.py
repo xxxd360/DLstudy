@@ -128,6 +128,7 @@ class Net(nn.Module):
 #         x = x.view(in_size, -1)
 #         x = self.fc(x)
 #         return x
+
 #
 
 # class MixedNet(nn.Module):
