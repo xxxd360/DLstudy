@@ -1,41 +1,7 @@
 import torch
 from functools import partial
 from collections import OrderedDict
-# 图像处理
-import torchvision
-import torchvision.transforms as transforms
-# 激活函数
 import torch.nn as nn
-import torch.nn.functional as F
-# 优化器
-import torch.optim as optim
-import matplotlib.pyplot as plt
-
-
-transform_train = transforms.Compose([
-    transforms.Resize(224),
-    transforms.RandomHorizontalFlip(),
-    transforms.ToTensor(),
-    transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
-])
-
-transform_test = transforms.Compose([
-    transforms.Resize(224),
-    transforms.ToTensor(),
-    transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
-])
-
-
-trainset = torchvision.datasets.STL10(
-    root='dataset_2',  download=True, transform=transform_train)
-trainloader = torch.utils.data.DataLoader(
-    trainset, batch_size=64, shuffle=True, num_workers=2)
-
-testset = torchvision.datasets.STL10(
-    root='dataset_2',  download=True, transform=transform_test)
-testloader = torch.utils.data.DataLoader(
-    testset, batch_size=64, shuffle=False, num_workers=2)
-
 
 def drop_path(x, drop_prob: float = 0., training: bool = False):
     if drop_prob == 0. or not training:
@@ -263,65 +229,4 @@ def vit_base_patch16_224(num_classes: int = 1000, pretrained=False):
                               num_classes=num_classes)
     return model
 
-
-
-model = vit_base_patch16_224(num_classes=10)
-# 损失函数与优化器
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-5)
-
-# 训练函数
-def train(epoch):
-    model.train()
-    running_loss = 0.0
-    correct = 0
-    total = 0
-    for batch_idx, (inputs, targets) in enumerate(trainloader):
-        optimizer.zero_grad()
-        outputs = model(inputs)
-        loss = criterion(outputs, targets)
-        loss.backward()
-        optimizer.step()
-
-        running_loss += loss.item()
-        _, predicted = outputs.max(1)
-        total += targets.size(0)
-        correct += predicted.eq(targets).sum().item()
-
-        if batch_idx % 50 == 0:
-            print(f'Train Epoch: {epoch} | Batch: {batch_idx} | Loss: {running_loss/(batch_idx+1):.3f} | '
-                  f'Acc: {100.*correct/total:.3f}% ({correct}/{total})')
-
-# 测试函数
-def test(epoch):
-    model.eval()
-    test_loss = 0
-    correct = 0
-    total = 0
-    with torch.no_grad():
-        for batch_idx, (inputs, targets) in enumerate(testloader):
-            outputs = model(inputs)
-            loss = criterion(outputs, targets)
-
-            test_loss += loss.item()
-            _, predicted = outputs.max(1)
-            total += targets.size(0)
-            correct += predicted.eq(targets).sum().item()
-
-    print(f'\nTest Epoch: {epoch} | Loss: {test_loss/len(testloader):.3f} | '
-          f'Acc: {100.*correct/total:.3f}% ({correct}/{total})\n')
-    return 100.*correct/total
-
-# 执行训练与测试
-if __name__ == '__main__':
-    epochs = 50
-    best_acc = 0
-    for epoch in range(epochs):
-        train(epoch)
-        acc = test(epoch)
-       # 保存最佳模型
-        if acc > best_acc:
-           best_acc = acc
-           torch.save(model.state_dict(), 'vit_best.pth')
-    print(f'Best Test Accuracy: {best_acc:.3f}%')
 
