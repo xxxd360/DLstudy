@@ -2,6 +2,7 @@
 ## MLP 多层感知机
 ## CNN 卷积网络   Inception(Googlenet)与Residual(Resnet)
 ## transformer 注意力机制与Vit
+## distillation 蒸馏——师生网络
 ## SENet  SEblock
 Squeeze 操作，顺着空间维度来进行特征压缩，将每个二维的特征通道变成一个实数，这个实数某种程度上具有全局的感受野，并且输出的维度和输入的特征通道数相匹配    
 Excitation 操作，它是一个类似于循环神经网络中门的机制。通过参数 w 来为每个特征通道生成权重，其中参数 w 被学习用来显式地建模特征通道间的相关性  
